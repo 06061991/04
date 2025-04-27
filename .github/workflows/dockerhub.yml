@@ -29,9 +29,6 @@ jobs:
         with:
           context: .
           push: true
-          provenance: false
           tags: |
             06061991/angularschool:1.0.${{ github.run_number }}
             06061991/angularschool:latest
-            cache-from: type=registry,ref=06061991/angularschool:buildcache
-          cache-to: type=inline
