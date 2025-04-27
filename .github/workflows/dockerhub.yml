@@ -28,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          push: true
+          push: false
           tags: |
             06061991/angularschool:1.0.${{ github.run_number }}
             06061991/angularschool:latest
