@@ -31,5 +31,5 @@ jobs:
           push: true
           provenance: False
           tags: |
-            06061991/angularschool:1.0.${{ github.run_number }}
-            06061991/angularschool:latest
+            asslam1991/angularschool:1.0.${{ github.run_number }}
+            asslam1991/angularschool:latest
