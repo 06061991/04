@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - "v*.*.*"
-job:
+jobs:
   build_push_on_github-packages:
     runs_on: ubuntu-latest
     steps:
