@@ -15,7 +15,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
         images: |
-          ghcr.io/06061991/04/angularshool
+          ghcr.io/asslam1991/04/angularshool
         tags: |
           type=ref,event=branch
             type=ref,event=pr
