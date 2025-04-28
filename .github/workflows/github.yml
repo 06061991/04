@@ -36,5 +36,5 @@ jobs:
         with:
            context: .
            push: true
-           provenance: False
+           provenance: false
            tags: ${{steps.meta.outputs.tags}}
