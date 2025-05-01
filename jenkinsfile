@@ -1,9 +1,128 @@
-pipeline{
-agent any
+pipeline {
+ environment {
+    		DOCKERHUB_CREDENTIALS=credentials('docker')
+        SCANNER_HOME = tool 'sonar-scanner'
+         GITHUB_TOKEN= credentials('github-token-argocd')
+
+
+    	}
+    agent any
 stages{
- stage('greeting')
+
+         stage("clean up")
+{  steps{
+       deleteDir()
+
+}}
+stage("chekout"){
+
+  steps { git url: 'https://github.com/06061991/04.git'}
+
 }
- steps{
- sh 'echoo *hello from github*'
- }
+stage("generate docker image")
+{
+steps { sh "docker build -t 006061991/04-app:1.1.${env.BUILD_NUMBER} ." }
 }
+  stage('Docker Image Scan') {
+            steps {
+                sh "trivy image --format table -o trivy-image-report.html 06061991/04-app:1.1.${env.BUILD_NUMBER} "
+            }
+        }
+
+stage ("login")
+{
+	steps {	sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+	}
+}
+stage ("push")
+{
+steps{
+ sh " docker push  06061991/04-app:1.1.${env.BUILD_NUMBER}"
+}
+
+}
+//stage ("clone gitops repo")
+//{
+//steps{
+// sh " git clone https://github.com/nourchawebi/argocd.git"
+//}
+
+//}
+
+//stage ("change image tag")
+//{
+//steps{
+//dir('argocd/04-app'){
+//script{
+//def deployment = readFile('04-deployment.yaml')
+//def updatedDeployment = deployment.replaceAll(/astonvilla-app:\s*[\w.-]+/, "astonvilla-app:1.1.${env.BUILD_NUMBER}")
+//writeFile file : 'astonvilla-deployment.yaml' , text: updatedDeployment
+//}
+//}
+//}
+
+//}
+
+
+//stage ("commit changes")
+//{
+//steps{
+// dir('argocd/astonvilla-app'){
+// script{
+                   //   sh 'git config user.email "jenkins@agent.com"'
+                   //   sh 'git config user.name "jenkins-admin"'
+                   //   sh 'git add astonvilla-deployment.yaml'
+                    //  sh 'git commit -m "updated image tag"'
+                  //    sh 'git push https://nourchawebi:${GITHUB_TOKEN}@github.com/nourchawebi/argocd.git main'
+               // }
+// }
+//}
+
+//}
+
+
+
+
+
+
+
+  stage('OWASP SCAN') {
+    steps {
+        dependencyCheck additionalArguments: '', odcInstallation: 'DP-CHECK'
+        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+    }
+}
+
+//stage('SonarQube Analysis') {
+          //  steps {
+             // withCredentials([ string(credentialsId: 'sonarqube-url', variable: 'SONARQUBE_HOST_URL'),
+//string(credentialsId: 'sonarqube-login', variable: 'SONARQUBE_LOGIN') ]) {
+                //    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                     //   -Dsonar.host.url=${SONARQUBE_HOST_URL} \
+                     //   -Dsonar.token=${SONARQUBE_LOGIN} \
+                     //   -Dsonar.projectName=astonvillaJenkins \
+                     //   -Dsonar.java.binaries=. \
+                     //   -Dsonar.projectKey=astonvillaJenkins '''   }
+
+          //  }
+     //   }
+
+// stage('Quality Gate') {
+          //  steps {
+             //   script {
+               //  waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube-login'
+             //   }
+           // }
+      //  }
+
+}}
+// pipeline {
+//     agent any
+//     stages {
+//         stage('Greetingg') {
+//             steps {
+//                 sh 'echo "Hello we are creating a pipeline for astonvilla App!"'
+//             }
+//         }
+//     }
+// }
