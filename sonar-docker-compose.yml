@@ -1,47 +1,43 @@
-# Supprimez la ligne `version: "3"` (obsolète)
-
 services:
-  sonarqube:
-    image: sonarqube:latest
-    container_name: sonarqube
+
+  sonar:
+    image: sonarqube
     ports:
       - "9000:9000"
+    networks:
+      - sonar
     environment:
       - SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/sonar
-      - SONARQUBE_JDBC_USERNAME=sonar  # Ajouté
-      - SONARQUBE_JDBC_PASSWORD=sonar  # Ajouté
     volumes:
-      - sonarqube_conf:/opt/sonarqube/conf
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-      - sonarqube_plugins:/opt/sonarqube/lib/common  # Correction du chemin
+      - sonarqube_conf1:/opt/sonarqube/conf
+      - sonarqube_data1:/opt/sonarqube/data
+      - sonarqube_extensions1:/opt/sonarqube/extensions
+      - sonarqube_bundled-plugins1:/opt/sonarqube/lib/bundled-plugins
     depends_on:
       - db
-    networks:
-      - sonar
-
   db:
-    image: postgres:13
+    image: postgres
     networks:
       - sonar
     environment:
-      - POSTGRES_USER=sonar  # ✅ Supprimé l'espace
+      - POSTGRES_USER=sonar
       - POSTGRES_PASSWORD=sonar
-      - POSTGRES_DB=sonar  # Ajouté pour créer la base
     volumes:
-      - postgresql:/var/lib/postgresql
-      - postgresql_data:/var/lib/postgresql/data
-
+      - postgresql1:/var/lib/postgresql
+      - postgresql_data1:/var/lib/postgresql/data
   ngrok:
     image: ngrok/ngrok:latest
     environment:
-      - NGROK_AUTHTOKEN=2wS3MB43gmvattFsQ95KaEsTNax_2ip66Kfu5EHeqCYWKL3ry  # ✅ Token direct
+      - NGROK_AUTHTOKEN=2wS3MB43gmvattFsQ95KaEsTNax_2ip66Kfu5EHeqCYWKL3ry
     command:
-      - "http"
-      - "9000"  # Tunnel vers SonarQube
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
     ports:
-      - "4040:4040"
+      - 4040:4040
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
     networks:
       - sonar
 
@@ -49,10 +45,11 @@ networks:
   sonar:
 
 volumes:
-  sonarqube_conf:
-  sonarqube_data:
+  sonarqube_conf1:
+  sonarqube_data1:
+  sonarqube_extensions1:
+  sonarqube_bundled-plugins1:
+  postgresql1:
+  postgresql_data1:
   sonarqube_extensions:
-  sonarqube_logs:
-  sonarqube_plugins:
-  postgresql:
-  postgresql_data:
+    external: false
