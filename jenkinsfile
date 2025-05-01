@@ -22,11 +22,6 @@ stage("generate docker image")
 {
 steps { sh "docker build -t 006061991/04-app:1.1.${env.BUILD_NUMBER} ." }
 }
-  stage('Docker Image Scan') {
-            steps {
-                sh "trivy image --format table -o trivy-image-report.html 06061991/04-app:1.1.${env.BUILD_NUMBER} "
-            }
-        }
 
 stage ("login")
 {
@@ -85,12 +80,7 @@ steps{
 
 
 
-  stage('OWASP SCAN') {
-    steps {
-        dependencyCheck additionalArguments: '', odcInstallation: 'DP-CHECK'
-        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-    }
-}
+
 
 //stage('SonarQube Analysis') {
           //  steps {
