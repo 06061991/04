@@ -31,6 +31,7 @@ pipeline {
         stage("Push Docker Image") {
             steps {
                 sh "docker push 06061991/04-app:1.1.${env.BUILD_NUMBER}"
+                sh "docker image rm 06061991/04-app:1.1.${env.BUILD_NUMBER}"
             }
         }
      }
