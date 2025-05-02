@@ -33,3 +33,5 @@ pipeline {
                 sh "docker push 06061991/04-app:1.1.${env.BUILD_NUMBER}"
             }
         }
+     }
+}
