@@ -34,5 +34,11 @@ pipeline {
                 sh "docker image rm asslam1991/04-app:1.1.${env.BUILD_NUMBER}"
             }
         }
+          stage('OWASP SCAN') {
+            steps {
+                dependencyCheck additionalArguments: '', odcInstallation: 'DP-CHECK'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
      }
 }
